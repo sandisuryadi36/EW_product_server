@@ -42,8 +42,8 @@ const create = async (req, res, next) => {
         if (image) {
             let tmp_path = image.path;
             let originalExt = image.originalname.split('.').pop();
-            let fileName = image.originalname + "." + originalExt;
-            let target_path = path.resolve(config.rootPath, `public/image/product/${fileName}`);
+            let fileName = "image-" + image.filename + "." + originalExt;
+            let target_path = path.resolve(config.rootPath, `public/images/product/${fileName}`);
 
             const src = fs.createReadStream(tmp_path);
             const dest = fs.createWriteStream(target_path);
@@ -84,7 +84,6 @@ const create = async (req, res, next) => {
 
         } else {
             let product = new Product(payload);
-            console.log(product.name);
             await product.save();
             return res.status(200).json({
                 error: false,
