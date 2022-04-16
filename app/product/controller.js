@@ -8,38 +8,48 @@ const Tag = require('../tag/model');
 // get all controller
 const viewAll = async (req, res, next) => {
     try {
-        let { search, limit = 10, page = 1 } = req.query;
+        let { search = '', limit = 10, page = 1, category = '', tags = [] } = req.query;
         if (limit <= 0) { limit = 10 }
         if (page <= 0) { page = 1 }
-        let dataCount = 0
-        if (search) {
-            dataCount = await Product.countDocuments({ name: { $regex: '.*' + search + '.*', $options: 'i' } })
-            let products = await Product.find({ name: { $regex: '.*' + search.toLowerCase() + '.*', $options: 'i' } })
-                .skip((page -1 ) * limit)
-                .limit(limit)
-                .populate('category')
-                .populate('tags')
-            
-            res.status(200).json({
-                error: false,
-                message: 'List of products',
-                dataCount,
-                page,
-                limit,
-                data: products
-            })
-        } else {
-            dataCount = await Product.countDocuments()
-            let products = await Product.find().skip((page - 1) * limit).limit(limit).populate('category').populate('tags')
-            res.status(200).json({
-                error: false,
-                message: 'List of products',
-                dataCount,
-                page,
-                limit,
-                data: products
-            })
+        let totaldata = 0
+
+        let filter = {}
+
+        if (search.length > 0) { 
+            filter.name = { $regex: '.*' + search + '.*', $options: 'i' }
         }
+
+        if (category.length > 0) { 
+            categoryQuery = await Category.findOne({ name: { $regex: '.*' + category + '.*', $options: 'i' } })
+            if (categoryQuery) { 
+                filter.category = categoryQuery._id
+            } else {
+                filter.category = null
+            }
+        }
+
+        if (tags.length > 0) { 
+            tagsQuery = await Tag.find({ name: { $in: tags } })
+            if (tagsQuery.length > 0) {
+                filter.tags = { $in: tagsQuery.map(tag => tag._id) }
+            } else {
+                filter.tags = null
+            }
+        }
+
+        console.log(filter)
+
+        totaldata = await Product.countDocuments()
+        let products = await Product.find(filter).skip((page - 1) * limit).limit(limit).populate('category').populate('tags')
+        res.status(200).json({
+            error: false,
+            message: 'List of products',
+            totaldata,
+            dataViewed: products.length,
+            page,
+            limit,
+            data: products
+        })
     } catch (err) { 
         next(err);
     }
