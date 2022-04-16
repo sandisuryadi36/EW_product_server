@@ -12,6 +12,7 @@ const authRoute = require('./app/auth/routes');
 const productRoute = require('./app/product/routes');
 const categoryRoute = require('./app/category/routes');
 const tagRoute = require('./app/tag/routes');
+const deliveryAddressRoute = require('./app/deliveryAddress/routes');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,10 +27,11 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.use('/public', express.static(path.join(__dirname, '/public')));
 app.use(decodeToken());
 
-app.use('/api/v1/', authRoute);
-app.use('/api/v1/', productRoute);
-app.use('/api/v1/', categoryRoute);
-app.use('/api/v1/', tagRoute);
+app.use('/auth', authRoute);
+app.use('/api/v1', productRoute);
+app.use('/api/v1', categoryRoute);
+app.use('/api/v1', tagRoute);
+app.use('/api/v1', deliveryAddressRoute);
 
 app.use('/', function (req, res) {
   res.render('index', { title: 'Product API Service' });

@@ -3,6 +3,8 @@ const config = require('../app/config');
 const User = require('../app/user/model');
 const { Ability, AbilityBuilder } = require('@casl/ability')
 
+
+// jwt
 function getToken(req) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
         return req.headers.authorization.split(' ')[1];
@@ -49,7 +51,7 @@ const policies = {
         can('update', 'User', { user_id: user._id});
         can('read', 'Cart', { user_id: user._id});
         can('update', 'Cart', { user_id: user._id});
-        can('view', 'DeliveryAddress');
+        can('read', 'DeliveryAddress', { user_id: user._id});
         can('create', 'DeliveryAddress', { user_id: user._id});
         can('update', 'DeliveryAddress', { user_id: user._id});
         can('delete', 'DeliveryAddress', { user_id: user._id});
