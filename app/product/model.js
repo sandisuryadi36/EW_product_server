@@ -32,7 +32,15 @@ const productSchema = new mongoose.Schema({
         filePath: {
             type: String,
         }
-    }
+    },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+    },
+    tags: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tag',
+    }]
 }, { timestamps: true })
 
 const Product = mongoose.model('Product', productSchema)

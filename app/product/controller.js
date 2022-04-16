@@ -2,6 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const config = require('../config');
 const Product = require('./model');
+const Category = require('../category/model');
+const Tag = require('../tag/model');
 
 // get all controller
 const viewAll = async (req, res, next) => {
@@ -11,10 +13,12 @@ const viewAll = async (req, res, next) => {
         if (page <= 0) { page = 1 }
         let dataCount = 0
         if (search) {
-            dataCount = await Product.countDocuments({ name: { $regex: '.*' + search.toLowerCase() + '.*', $options: 'i' } })
+            dataCount = await Product.countDocuments({ name: { $regex: '.*' + search + '.*', $options: 'i' } })
             let products = await Product.find({ name: { $regex: '.*' + search.toLowerCase() + '.*', $options: 'i' } })
                 .skip((page -1 ) * limit)
                 .limit(limit)
+                .populate('category')
+                .populate('tags')
             
             res.status(200).json({
                 error: false,
@@ -26,7 +30,7 @@ const viewAll = async (req, res, next) => {
             })
         } else {
             dataCount = await Product.countDocuments()
-            let products = await Product.find().skip((page - 1) * limit).limit(limit)
+            let products = await Product.find().skip((page - 1) * limit).limit(limit).populate('category').populate('tags')
             res.status(200).json({
                 error: false,
                 message: 'List of products',
@@ -60,6 +64,25 @@ const create = async (req, res, next) => {
     try {
         const payload = req.body;
         const image = req.file;
+
+        if (payload.category) {
+            let category = await Category.findOne({ name: { $regex: '.*' + payload.category + '.*', $options: 'i' } })
+            if (category) {
+                payload.category = category._id
+            } else { 
+                delete payload.category
+            }
+        }
+
+        if (payload.tags && payload.tags.length > 0) { 
+            let tags = await Tag.find({ name: { $in: payload.tags } })
+            if (tags.length > 0) {
+                payload.tags = tags.map(tag => tag._id)
+            } else {
+                delete payload.tags
+            }
+        }
+
         if (image) {
             let tmp_path = image.path;
             let originalExt = image.originalname.split('.').pop();
@@ -129,6 +152,24 @@ const update = async (req, res, next) => {
     try {
         const image = req.file;
         const payload = req.body;
+
+        if (payload.category) {
+            let category = await Category.findOne({ name: { $regex: '.*' + payload.category + '.*', $options: 'i' } })
+            if (category) {
+                payload.category = category._id
+            } else {
+                delete payload.category
+            }
+        }
+
+        if (payload.tags && payload.tags.length > 0) {
+            let tags = await Tag.find({ name: { $in: payload.tags } })
+            if (tags.length > 0) {
+                payload.tags = tags.map(tag => tag._id)
+            } else {
+                delete payload.tags
+            }
+        }
 
         if (image) {
             let tmp_path = image.path;
