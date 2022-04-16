@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const config = require('../app/config');
 const User = require('../app/user/model');
+const { Ability, AbilityBuilder } = require('@casl/ability')
 
 function getToken(req) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
@@ -36,7 +37,56 @@ function decodeToken() {
     }
 }
 
+// policy
+const policies = {
+    guest(user, {can}) {
+        can('read', 'Product');
+    },
+    user(user, {can}) { 
+        can('view', 'Order');
+        can('create', 'Order');
+        can('read', 'Order', { user_id: user._id});
+        can('update', 'User', { user_id: user._id});
+        can('read', 'Cart', { user_id: user._id});
+        can('update', 'Cart', { user_id: user._id});
+        can('view', 'DeliveryAddress');
+        can('create', 'DeliveryAddress', { user_id: user._id});
+        can('update', 'DeliveryAddress', { user_id: user._id});
+        can('delete', 'DeliveryAddress', { user_id: user._id});
+        can('read', 'Invoice', { user_id: user._id});
+    },
+    admin(user, {can}) { 
+        can('manage', 'all');
+    }
+}
+
+const policyFor = user => { 
+    let builder = new AbilityBuilder();
+    if (user && typeof policies[user.role] === 'function') {
+        policies[user.role](user, builder);
+    } else { 
+        policies['guest'](user, builder);
+    }
+    return new Ability(builder.rules);
+}
+
+function policeCheck(action, subject) {
+    return function(req, res, next) {
+        let policy = policyFor(req.user);
+        if (!policy.can(action, subject)) {
+            return res.status(403).json({
+                error: true,
+                message: 'Forbidden! You are not authorized to perform this action.'
+            });
+        }
+        return next();
+    }
+}
+
+
+
 module.exports = {
     getToken,
-    decodeToken
+    decodeToken,
+    policeCheck
 }

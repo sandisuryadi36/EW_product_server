@@ -1,9 +1,19 @@
 const router = require('express').Router();
 const tagController = require('./constroller');
+const { policeCheck } = require('../../utils');
 
 router.get('/tag', tagController.viewAll);
-router.post('/tag', tagController.create);
-router.put('/tag/:id', tagController.update);
-router.delete('/tag/:id', tagController.remove);
+router.post('/tag',
+    policeCheck('create', 'Tag'),
+    tagController.create
+);
+router.put('/tag/:id',
+    policeCheck('update', 'Tag'),
+    tagController.update
+);
+router.delete('/tag/:id',
+    policeCheck('delete', 'Tag'),
+    tagController.remove
+);
 
 module.exports = router;
