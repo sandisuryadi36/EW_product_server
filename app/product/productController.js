@@ -4,33 +4,40 @@ const config = require('../config');
 const Product = require('./productModel');
 
 // get all controller
-const viewAll = (req, res, next) => {
-    if (req.query.search) {
-        console.log(req.query.search);
-        let text = req.query.search;
-        Product.find({ name: { $regex: '.*' + text.toLowerCase() + '.*', $options: 'i' } }, (err, products) => {
-            if (err) {
-                next(err);
-            }
+const viewAll = async (req, res, next) => {
+    try {
+        let { search, limit = 10, page = 1 } = req.query;
+        if (limit <= 0) { limit = 10 }
+        if (page <= 0) { page = 1 }
+        let dataCount = 0
+        if (search) {
+            dataCount = await Product.countDocuments({ name: { $regex: '.*' + search.toLowerCase() + '.*', $options: 'i' } })
+            let products = await Product.find({ name: { $regex: '.*' + search.toLowerCase() + '.*', $options: 'i' } })
+                .skip((page -1 ) * limit)
+                .limit(limit)
+            
             res.status(200).json({
                 error: false,
                 message: 'List of products',
-                dataCount: products.length,
+                dataCount,
+                page,
+                limit,
                 data: products
             })
-        });
-    } else {
-        Product.find({}, (err, products) => {
-            if (err) {
-                next(err);
-            }
+        } else {
+            dataCount = await Product.countDocuments()
+            let products = await Product.find().skip((page - 1) * limit).limit(limit)
             res.status(200).json({
                 error: false,
                 message: 'List of products',
-                dataCount: products.length,
+                dataCount,
+                page,
+                limit,
                 data: products
             })
-        });
+        }
+    } catch (err) { 
+        next(err);
     }
 }
 
@@ -140,7 +147,7 @@ const update = async (req, res, next) => {
                         filePath: `${req.protocol}://${req.headers.host}/public/image/produst/${fileName}`
                     }
                     fs.unlinkSync(tmp_path);
-                    await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true })
+                    await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true });
                     return res.status(200).json({
                         error: false,
                         message: 'Product successfully updated',
@@ -159,7 +166,7 @@ const update = async (req, res, next) => {
                 }
             })
         } else { 
-            await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true })
+            await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true })
             return res.status(200).json({
                 error: false,
                 message: 'Product successfully updated',
