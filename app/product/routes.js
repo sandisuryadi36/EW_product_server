@@ -2,7 +2,7 @@ const router = require('express').Router();
 const multer = require('multer');
 const os = require('os');
 
-const productController = require('./productController');
+const productController = require('./controller');
 
 router.get('/product', productController.viewAll);
 router.get('/product/:id', productController.viewOne);

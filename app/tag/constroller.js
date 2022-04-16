@@ -1,12 +1,12 @@
-const Category = require('./categoryModel')
+const Tag = require('./model')
 
 const create = async (req, res, next) => { 
     try {
-        const category = await Category.create(req.body)
+        const tag = await Tag.create(req.body)
         res.status(200).json({
             error: false,
-            message: 'Category successfully created',
-            data: category
+            message: 'Tag successfully created',
+            data: tag
         })
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
@@ -22,11 +22,11 @@ const create = async (req, res, next) => {
 
 const update = async (req, res, next) => { 
     try {
-        const category = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        const tag = await Tag.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
         res.status(200).json({
             error: false,
-            message: 'Category successfully updated',
-            data: category
+            message: 'Tag successfully updated',
+            data: tag
         })
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
@@ -42,11 +42,11 @@ const update = async (req, res, next) => {
 
 const remove = async (req, res, next) => { 
     try {
-        const category = await Category.findByIdAndDelete(req.params.id)
+        const tag = await Tag.findByIdAndDelete(req.params.id)
         res.status(200).json({
             error: false,
-            message: 'Category successfully deleted',
-            data: category
+            message: 'Tag successfully deleted',
+            data: tag
         })
     } catch (err) { 
         next(err);
@@ -55,10 +55,10 @@ const remove = async (req, res, next) => {
 
 const viewAll = async (req, res, next) => { 
     try {
-        const categories = await Category.find({})
+        const categories = await Tag.find({})
         res.status(200).json({
             error: false,
-            message: 'Categories successfully retrieved',
+            message: 'Tags successfully retrieved',
             data: categories
         })
     } catch (err) { 

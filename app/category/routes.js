@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const categoryController = require('./categoryController');
+const categoryController = require('./constroller');
 
 router.get('/category', categoryController.viewAll);
 router.post('/category', categoryController.create);

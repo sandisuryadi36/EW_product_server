@@ -1,8 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const config = require('../config');
-const Product = require('./productModel');
-const { findById } = require('./productModel');
+const Product = require('./model');
 
 // get all controller
 const viewAll = async (req, res, next) => {
