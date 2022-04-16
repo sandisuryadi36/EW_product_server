@@ -7,6 +7,8 @@ const cors = require('cors');
 
 var app = express();
 
+const { decodeToken } = require('./utils')
+const authRoute = require('./app/auth/routes');
 const productRoute = require('./app/product/routes');
 const categoryRoute = require('./app/category/routes');
 const tagRoute = require('./app/tag/routes');
@@ -22,7 +24,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '/public')));
 app.use('/public', express.static(path.join(__dirname, '/public')));
+app.use(decodeToken());
 
+app.use('/api/v1/', authRoute);
 app.use('/api/v1/', productRoute);
 app.use('/api/v1/', categoryRoute);
 app.use('/api/v1/', tagRoute);
