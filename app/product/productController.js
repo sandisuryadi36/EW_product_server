@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const config = require('../config');
 const Product = require('./productModel');
+const { findById } = require('./productModel');
 
 // get all controller
 const viewAll = async (req, res, next) => {
@@ -42,17 +43,17 @@ const viewAll = async (req, res, next) => {
 }
 
 // get one controller
-const viewOne = (req, res, next) => {
-    Product.findById(req.params.id, (err, product) => {
-        if (err) {
-            next(err);
-        }
+const viewOne = async (req, res, next) => {
+    try {
+        Product.findById(req.params.id)
         res.status(200).json({
             error: false,
             message: 'Product successfully found',
             data: product
         })
-    });
+    } catch (err) { 
+        next(err);
+    }
 }
 
 // post controller
@@ -76,7 +77,7 @@ const create = async (req, res, next) => {
                         ...payload,
                         image: {
                             fileName,
-                            filePath: `${req.protocol}://${req.headers.host}/public/image/produst/${fileName}`
+                            filePath: `${req.protocol}://${req.headers.host}/public/images/product/${fileName}`
                         }
                     })
                     fs.unlinkSync(tmp_path);
@@ -144,14 +145,22 @@ const update = async (req, res, next) => {
                 try {
                     payload.image = {
                         fileName,
-                        filePath: `${req.protocol}://${req.headers.host}/public/image/produst/${fileName}`
+                        filePath: `${req.protocol}://${req.headers.host}/public/images/product/${fileName}`
                     }
+
+                    // dellete old image
+                    let product = await Product.findById(req.params.id);
+                    let oldImage = `${config.rootPath}/public/images/product/${product.image.fileName}`;
+                    if (fs.existsSync(oldImage)) { 
+                        fs.unlinkSync(oldImage);
+                    }
+
                     fs.unlinkSync(tmp_path);
-                    await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true });
+                    product = await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true });
                     return res.status(200).json({
                         error: false,
                         message: 'Product successfully updated',
-                        data: payload
+                        data: product
                     })
                 } catch (err) {
                     fs.unlinkSync(target_path);
@@ -166,11 +175,11 @@ const update = async (req, res, next) => {
                 }
             })
         } else { 
-            await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true })
+            let product = await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true })
             return res.status(200).json({
                 error: false,
                 message: 'Product successfully updated',
-                data: payload
+                data: product
             })
         }
 
@@ -187,17 +196,22 @@ const update = async (req, res, next) => {
 }
 
 // delete controller
-const remove = (req, res, next) => {
-    Product.findByIdAndRemove(req.params.id, (err, product) => {
-        if (err) {
-            next(err);
+const remove = async (req, res, next) => {
+    try {
+        let product = await Product.findByIdAndDelete(req.params.id)
+        let oldImage = `${config.rootPath}/public/images/product/${product.image.fileName}`;
+        if (fs.existsSync(oldImage)) {
+            fs.unlinkSync(oldImage);
         }
+
         res.status(200).json({
             error: false,
             message: 'Product successfully deleted',
             data: product
         })
-    });
+    } catch (err) {
+        next(err);
+    }
 }
 
 module.exports = {
