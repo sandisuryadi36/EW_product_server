@@ -3,41 +3,55 @@ const fs = require('fs');
 const config = require('../config');
 const Product = require('./productModel');
 
-// // get all controller
-// const viewAll = (req, res, next) => {
-//     if (req.query.search) {
-//         console.log(req.query.search);
-//         let text = req.query.search;
-//         Product.find({ name: { $regex: '.*' + text.toLowerCase() + '.*', $options: 'i' } }, (err, products) => {
-//             if (err) {
-//                 res.send(err);
-//             }
-//             res.json(products);
-//         });
-//     } else {
-//         Product.find({}, (err, products) => {
-//             if (err) {
-//                 res.send(err);
-//             }
-//             res.json(products);
-//         });
-//     }
-// }
+// get all controller
+const viewAll = (req, res, next) => {
+    if (req.query.search) {
+        console.log(req.query.search);
+        let text = req.query.search;
+        Product.find({ name: { $regex: '.*' + text.toLowerCase() + '.*', $options: 'i' } }, (err, products) => {
+            if (err) {
+                next(err);
+            }
+            res.status(200).json({
+                error: false,
+                message: 'List of products',
+                dataCount: products.length,
+                data: products
+            })
+        });
+    } else {
+        Product.find({}, (err, products) => {
+            if (err) {
+                next(err);
+            }
+            res.status(200).json({
+                error: false,
+                message: 'List of products',
+                dataCount: products.length,
+                data: products
+            })
+        });
+    }
+}
 
-// // get one controller
-// const viewOne = (req, res, next) => {
-//     Product.findById(req.params.id, (err, product) => {
-//         if (err) {
-//             res.send(err);
-//         }
-//         res.json(product);
-//     });
-// }
+// get one controller
+const viewOne = (req, res, next) => {
+    Product.findById(req.params.id, (err, product) => {
+        if (err) {
+            next(err);
+        }
+        res.status(200).json({
+            error: false,
+            message: 'Product successfully found',
+            data: product
+        })
+    });
+}
 
 // post controller
 const create = async (req, res, next) => {
     try {
-        let payload = req.body;
+        const payload = req.body;
         const image = req.file;
         if (image) {
             let tmp_path = image.path;
@@ -58,20 +72,20 @@ const create = async (req, res, next) => {
                             filePath: `${req.protocol}://${req.headers.host}/public/image/produst/${fileName}`
                         }
                     })
-                    console.log(product.name);
+                    fs.unlinkSync(tmp_path);
                     await product.save();
                     return res.status(200).json({
                         error: false,
                         message: 'Product successfully created',
                         data: product
                     })
-                } catch (error) {
+                } catch (err) {
                     fs.unlinkSync(target_path);
-                    if(err && error.name === "ValidationsError") {
+                    if(err && err.name === "ValidationsError") {
                         return res.status(400).json({
                             error: true,
-                            message: error.message,
-                            fields: error.errors
+                            message: err.message,
+                            fields: err.errors
                         })
                     }
                     next(error);
@@ -103,47 +117,86 @@ const create = async (req, res, next) => {
     }
 }
 
-// // put controller
-// const update = (req, res, next) => {
-//     const image = req.file;
-//     const updatedProduct = req.body;
+// put controller
+const update = async (req, res, next) => {
+    try {
+        const image = req.file;
+        const payload = req.body;
 
-//     if (image) {
-//         const target = path.join("uploads", image.originalname)
-//         fs.renameSync(image.path, target);
-//         updatedProduct.image = {
-//             fileName: image.originalname,
-//             filePath: `${req.protocol}://${req.headers.host}/public/${encodeURI(image.originalname)}`
-//         }
-//     }
-//     Product.findOneAndUpdate({ _id: req.params.id }, { $set: updatedProduct },{new: true}, (err, product) => { 
-//         if (err) {
-//             res.send(err);
-//         }
-//         res.json({
-//             message: 'Product successfully updated',
-//             product
-//         });
-//     })
-// }
+        if (image) {
+            let tmp_path = image.path;
+            let originalExt = image.originalname.split('.').pop();
+            let fileName = "image-" + image.filename + "." + originalExt;
+            let target_path = path.resolve(config.rootPath, `public/images/product/${fileName}`);
 
-// // delete controller
-// const remove = (req, res, next) => {
-//     Product.findByIdAndRemove(req.params.id, (err, product) => {
-//         if (err) {
-//             res.send(err);
-//         }
-//         res.json({
-//             message: 'Product successfully deleted',
-//             product
-//         });
-//     });
-// }
+            const src = fs.createReadStream(tmp_path);
+            const dest = fs.createWriteStream(target_path);
+            src.pipe(dest);
+
+            src.on('end', async () => {
+                try {
+                    payload.image = {
+                        fileName,
+                        filePath: `${req.protocol}://${req.headers.host}/public/image/produst/${fileName}`
+                    }
+                    fs.unlinkSync(tmp_path);
+                    await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true })
+                    return res.status(200).json({
+                        error: false,
+                        message: 'Product successfully updated',
+                        data: payload
+                    })
+                } catch (err) {
+                    fs.unlinkSync(target_path);
+                    if (err && err.name === "ValidationsError") {
+                        return res.status(400).json({
+                            error: true,
+                            message: err.message,
+                            fields: err.errors
+                        })
+                    }
+                    next(err);
+                }
+            })
+        } else { 
+            await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true })
+            return res.status(200).json({
+                error: false,
+                message: 'Product successfully updated',
+                data: payload
+            })
+        }
+
+    } catch (err) {
+        if (err && err.name === "ValidationError") {
+            return res.status(400).json({
+                error: true,
+                message: err.message,
+                fields: err.errors
+            })
+        }
+        next(err);
+    }
+}
+
+// delete controller
+const remove = (req, res, next) => {
+    Product.findByIdAndRemove(req.params.id, (err, product) => {
+        if (err) {
+            next(err);
+        }
+        res.status(200).json({
+            error: false,
+            message: 'Product successfully deleted',
+            data: product
+        })
+    });
+}
 
 module.exports = {
-    // viewAll,
-    // viewOne,
-    create
-    // update,
-    // remove,
+    viewAll,
+    viewOne,
+    create,
+    update,
+    remove,
 }
