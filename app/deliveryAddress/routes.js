@@ -18,5 +18,9 @@ router.get('/delivery-address',
     policeCheck('read', 'DeliveryAddress'),
     deliveryAddressController.viewByUser
 )
+router.get('/delivery-addresses',
+    policeCheck('view', 'DeliveryAddress'),
+    deliveryAddressController.viewAll
+)
 
 module.exports = router;

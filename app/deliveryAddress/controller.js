@@ -112,9 +112,36 @@ const viewByUser = async (req, res, next) => {
     }
 }
 
+const viewAll = async (req, res, next) => { 
+    try {
+        let addresses = await DeliveryAddress.find({}).populate('user', '-password -__v -createdAt -updatedAt -token')
+        if (!addresses) return res.status(404).json({
+            error: true,
+            message: 'Delivery addresses not found'
+        })
+
+        res.status(200).json({
+            error: false,
+            message: 'Delivery addresses successfully retrieved',
+            data: addresses
+        })
+
+    } catch (err) { 
+        if (err && err.name === "ValidationError") { 
+            return res.status(400).json({
+                error: true,
+                message: err.message,
+                fields: err.errors
+            })
+        }
+        next(err);
+    }
+}
+
 module.exports = {
     create,
     update,
     remove,
-    viewByUser
+    viewByUser,
+    viewAll
 }
