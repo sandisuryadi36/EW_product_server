@@ -10,6 +10,12 @@ const update = async (req, res, next) => {
             error: true,
             message: 'Product not found'
         })
+
+        if (product.stock < payload.quantity) return res.status(400).json({
+            error: true,
+            message: 'Not enough stock'
+        })
+        
         payload.productName = product.name
         payload.price = product.price
         payload.imageUrl = product.image.filePath
