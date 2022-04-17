@@ -30,7 +30,7 @@ const update = async (req, res, next) => {
         let payload = req.body
         let user = req.user
 
-        let address = await DeliveryAddress.findOne({ _id: payload._id, user: user._id })
+        let address = await DeliveryAddress.findOne({ _id: req.params.id, user: user._id })
         if (!address) return res.status(404).json({
             error: true,
             message: 'Delivery address not found'
@@ -60,7 +60,7 @@ const remove = async (req, res, next) => {
         let payload = req.body
         let user = req.user
 
-        let address = await DeliveryAddress.findOne({ _id: payload._id, user: user._id })
+        let address = await DeliveryAddress.findOne({ __id: req.params.id, user: user._id })
         if (!address) return res.status(404).json({
             error: true,
             message: 'Delivery address not found'
