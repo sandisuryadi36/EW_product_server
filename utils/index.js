@@ -44,17 +44,18 @@ const policies = {
     guest(user, {can}) {
         can('read', 'Product');
     },
-    user(user, {can}) { 
-        can('view', 'Order');
+    user(user, { can }) {
+        can('read', 'Order');
         can('create', 'Order');
-        can('read', 'Order', { user_id: user._id});
-        can('update', 'User', { user_id: user._id});
-        can('read', 'Cart', { user_id: user._id});
-        can('update', 'Cart', { user_id: user._id});
-        can('read', 'DeliveryAddress', { user_id: user._id});
-        can('create', 'DeliveryAddress', { user_id: user._id});
-        can('update', 'DeliveryAddress', { user_id: user._id});
-        can('delete', 'DeliveryAddress', { user_id: user._id});
+        can('read', 'Order', { user_id: user._id });
+        can('update', 'User', { user_id: user._id });
+        can('read', 'Cart', { user_id: user._id });
+        can('update', 'Cart', { user_id: user._id });
+        can('read', 'DeliveryAddress', { user_id: user._id });
+        can('create', 'DeliveryAddress', { user_id: user._id });
+        can('update', 'DeliveryAddress', { user_id: user._id });
+        can('delete', 'DeliveryAddress', { user_id: user._id });
+        can('read', 'Invoice');
         can('read', 'Invoice', { user_id: user._id});
     },
     admin(user, {can}) { 

@@ -14,6 +14,8 @@ const categoryRoute = require('./app/category/routes');
 const tagRoute = require('./app/tag/routes');
 const deliveryAddressRoute = require('./app/deliveryAddress/routes');
 const cartRoute = require('./app/cart/routes');
+const orderRoute = require('./app/order/routes');
+const invoiceRoute = require('./app/invoice/routes');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -34,6 +36,8 @@ app.use('/api/v1', categoryRoute);
 app.use('/api/v1', tagRoute);
 app.use('/api/v1', deliveryAddressRoute);
 app.use('/api/v1', cartRoute);
+app.use('/api/v1', orderRoute);
+app.use('/api/v1', invoiceRoute);
 
 app.use('/', function (req, res) {
   res.render('index', { title: 'Product API Service' });

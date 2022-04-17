@@ -18,7 +18,7 @@ router.get('/delivery-address',
     policeCheck('read', 'DeliveryAddress'),
     deliveryAddressController.viewByUser
 )
-router.get('/delivery-addresses',
+router.get('/delivery-address-all',
     policeCheck('view', 'DeliveryAddress'),
     deliveryAddressController.viewAll
 )
