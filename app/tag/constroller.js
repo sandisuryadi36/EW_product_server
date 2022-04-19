@@ -3,14 +3,14 @@ const Tag = require('./model')
 const create = async (req, res, next) => { 
     try {
         const tag = await Tag.create(req.body)
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Tag successfully created',
             data: tag
         })
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -23,14 +23,14 @@ const create = async (req, res, next) => {
 const update = async (req, res, next) => { 
     try {
         const tag = await Tag.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Tag successfully updated',
             data: tag
         })
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -43,7 +43,7 @@ const update = async (req, res, next) => {
 const remove = async (req, res, next) => { 
     try {
         const tag = await Tag.findByIdAndDelete(req.params.id)
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Tag successfully deleted',
             data: tag
@@ -56,7 +56,7 @@ const remove = async (req, res, next) => {
 const viewAll = async (req, res, next) => { 
     try {
         const categories = await Tag.find({})
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Tags successfully retrieved',
             data: categories

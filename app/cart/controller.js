@@ -1,17 +1,18 @@
 const CartItem = require('./itemModel')
 const Product = require('../product/model')
+const { response } = require('../../app')
 
 const update = async (req, res, next) => { 
     try {
         const payload = req.body
         const user = req.user
         const product = await Product.findById(payload.product)
-        if (!product) return res.status(404).json({
+        if (!product) return response.json({
             error: true,
             message: 'Product not found'
         })
 
-        if (product.stock < payload.quantity) return res.status(400).json({
+        if (product.stock < payload.quantity) return res.json({
             error: true,
             message: 'Not enough stock'
         })
@@ -26,14 +27,14 @@ const update = async (req, res, next) => {
             payload,
             { new: true, upsert: true, runValidators: true }
         )
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Cart item successfully updated',
             data: cartIten
         })
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -47,7 +48,7 @@ const viewByUser = async (req, res, next) => {
     try {
         const user = req.user
         const cartItems = await CartItem.find({ user: user._id }).select('-user')
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Cart items successfully retrieved',
             data: cartItems

@@ -9,7 +9,7 @@ const create = async (req, res, next) => {
         let { deliveryFee, deliveryAddressID } = req.body
         let items = await CartItem.find({ user: req.user._id }).populate('product')
         if (!items) {
-            return res.status(404).json({
+            return res.json({
                 error: true,
                 message: 'Cart is empty'
             })
@@ -40,7 +40,7 @@ const create = async (req, res, next) => {
         orderItems.forEach(item => order.orderItems.push(item))
         await order.save()
         await CartItem.deleteMany({ user: req.user._id })
-        return res.status(200).json({
+        return res.json({
             error: false,
             message: 'Order successfully created',
             data: order
@@ -48,7 +48,7 @@ const create = async (req, res, next) => {
 
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -68,12 +68,12 @@ const viewByUser = async (req, res, next) => {
             .populate('deliveryAddress')
             .select('-user')
             .sort({ createdAt: -1 })
-        if (!orders) return res.status(404).json({
+        if (!orders) return res.json({
             error: true,
             message: 'Orders not found'
         })
 
-        return res.status(200).json({
+        return res.json({
             error: false,
             message: 'Orders successfully retrieved',
             data: orders
@@ -81,7 +81,7 @@ const viewByUser = async (req, res, next) => {
 
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -101,12 +101,12 @@ const viewAll = async (req, res, next) => {
             .populate('deliveryAddress')
             .populate('user')
             .sort({ createdAt: -1 })
-        if (!orders) return res.status(404).json({
+        if (!orders) return res.json({
             error: true,
             message: 'Orders not found'
         })
 
-        return res.status(200).json({
+        return res.json({
             error: false,
             message: 'Orders successfully retrieved',
             data: orders
@@ -114,7 +114,7 @@ const viewAll = async (req, res, next) => {
 
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors

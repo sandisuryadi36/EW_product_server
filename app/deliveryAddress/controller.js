@@ -7,7 +7,7 @@ const create = async (req, res, next) => {
 
         let address = new DeliveryAddress({ ...payload, user: user._id })
         await address.save()
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Delivery address successfully created',
             data: address
@@ -15,7 +15,7 @@ const create = async (req, res, next) => {
 
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -31,13 +31,13 @@ const update = async (req, res, next) => {
         let user = req.user
 
         let address = await DeliveryAddress.findOne({ _id: req.params.id, user: user._id })
-        if (!address) return res.status(404).json({
+        if (!address) return res.json({
             error: true,
             message: 'Delivery address not found'
         })
 
         await DeliveryAddress.findByIdAndUpdate(address._id, payload)
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Delivery address successfully updated',
             data: address
@@ -45,7 +45,7 @@ const update = async (req, res, next) => {
 
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -61,20 +61,20 @@ const remove = async (req, res, next) => {
         let user = req.user
 
         let address = await DeliveryAddress.findOne({ __id: req.params.id, user: user._id })
-        if (!address) return res.status(404).json({
+        if (!address) return res.json({
             error: true,
             message: 'Delivery address not found'
         })
 
         await DeliveryAddress.findByIdAndRemove(address._id)
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Delivery address successfully removed'
         })
 
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -89,12 +89,12 @@ const viewByUser = async (req, res, next) => {
         let user = req.user
 
         let addresses = await DeliveryAddress.find({ user: user._id }).select('-user')
-        if (!addresses) return res.status(404).json({
+        if (!addresses) return res.json({
             error: true,
             message: 'Delivery addresses not found'
         })
 
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Delivery addresses successfully retrieved',
             data: addresses
@@ -102,7 +102,7 @@ const viewByUser = async (req, res, next) => {
 
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -115,12 +115,12 @@ const viewByUser = async (req, res, next) => {
 const viewAll = async (req, res, next) => { 
     try {
         let addresses = await DeliveryAddress.find({}).populate('user', '-password -__v -createdAt -updatedAt -token')
-        if (!addresses) return res.status(404).json({
+        if (!addresses) return res.json({
             error: true,
             message: 'Delivery addresses not found'
         })
 
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Delivery addresses successfully retrieved',
             data: addresses
@@ -128,7 +128,7 @@ const viewAll = async (req, res, next) => {
 
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors

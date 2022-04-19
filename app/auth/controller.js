@@ -8,14 +8,14 @@ const { getToken } = require('../../utils')
 const register = async (req, res, next) => { 
     try {
         const user = await User.create(req.body)
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'User successfully created',
             data: user
         })
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -44,15 +44,18 @@ const localStrategy = async (email, password, done) => {
 const login = (req, res, next) => { 
     passport.authenticate('local', async function(err, user) {
         if (err) return next(err)
-        if (!user) return res.status(401).json({
+        if (!user) return res.json({
             error: true,
             message: "Email or Password is incorrect"
         })
         const token = jwt.sign( user , config.secretKey)
-        await User.findByIdAndUpdate(user._id, { $push: {token} })
-        res.status(200).json({
+        await User.findByIdAndUpdate(user._id, { $push: { token } })
+        res.cookie('token', token, {
+            httpOnly: true
+        })
+        res.json({
             error: false,
-            message: 'User successfully logged in',
+            message: 'Login successfully',
             data: {
                 user,
                 token
@@ -66,13 +69,13 @@ const logout = async (req, res, next) => {
     let user = await User.findOneAndUpdate({ token: { $in: [token] } }, { $pull: { token: token } }, { useFindAndModify: false })
     
     if (!token || !user) {
-        return res.status(401).json({
+        return res.json({
             error: true,
             message: 'User is not logged in or token is invalid'
         })
     }
 
-    return res.status(200).json({
+    return res.json({
         error: false,
         message: 'User successfully logged out'
     })
@@ -80,13 +83,13 @@ const logout = async (req, res, next) => {
 
 const me = (req, res, next) => { 
     if (!req.user) {
-        res.status(401).json({
+        res.json({
             error: true,
             message: 'User is not logged in or token is invalid'
         })
     }
 
-    res.status(200).json({
+    res.json({
         error: false,
         user: req.user
     })

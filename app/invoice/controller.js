@@ -8,11 +8,11 @@ const viewByOrderNumber = async (req, res, next) => {
             .populate('order')
             .populate('order.orderItems.product')
             .select('-user')
-        if(!invoice) return res.status(404).json({
+        if(!invoice) return res.json({
             error: true,
             message: 'Invoice not found'
         })
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Invoice successfully retrieved',
             data: invoice
@@ -28,11 +28,11 @@ const viewAllByUser = async (req, res, next) => {
         let invoices = await Invoice.find({ user: user._id })
             .populate('order')
             .select('-user')
-        if(!invoices) return res.status(404).json({
+        if(!invoices) return res.json({
             error: true,
             message: 'Invoices not found'
         })
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Invoices successfully retrieved',
             data: invoices
@@ -47,11 +47,11 @@ const viewAll = async (req, res, next) => {
         let invoices = await Invoice.find({})
             .populate('order')
             .populate('user')
-        if(!invoices) return res.status(404).json({
+        if(!invoices) return res.json({
             error: true,
             message: 'Invoices not found'
         })
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Invoices successfully retrieved',
             data: invoices

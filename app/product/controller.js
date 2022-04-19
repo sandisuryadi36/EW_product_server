@@ -41,7 +41,7 @@ const viewAll = async (req, res, next) => {
 
         totaldata = await Product.countDocuments()
         let products = await Product.find(filter).skip((page - 1) * limit).limit(limit).populate('category').populate('tags')
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'List of products',
             totaldata,
@@ -59,7 +59,7 @@ const viewAll = async (req, res, next) => {
 const viewOne = async (req, res, next) => {
     try {
         Product.findById(req.params.id)
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Product successfully found',
             data: product
@@ -114,7 +114,7 @@ const create = async (req, res, next) => {
                     })
                     fs.unlinkSync(tmp_path);
                     await product.save();
-                    return res.status(200).json({
+                    return res.json({
                         error: false,
                         message: 'Product successfully created',
                         data: product
@@ -122,7 +122,7 @@ const create = async (req, res, next) => {
                 } catch (err) {
                     fs.unlinkSync(target_path);
                     if(err && err.name === "ValidationsError") {
-                        return res.status(400).json({
+                        return res.json({
                             error: true,
                             message: err.message,
                             fields: err.errors
@@ -139,7 +139,7 @@ const create = async (req, res, next) => {
         } else {
             let product = new Product(payload);
             await product.save();
-            return res.status(200).json({
+            return res.json({
                 error: false,
                 message: 'Product successfully created',
                 data : product
@@ -147,7 +147,7 @@ const create = async (req, res, next) => {
         }
     } catch (err) {
         if (err && err.name === "ValidationError") {
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -207,7 +207,7 @@ const update = async (req, res, next) => {
 
                     fs.unlinkSync(tmp_path);
                     product = await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true });
-                    return res.status(200).json({
+                    return res.json({
                         error: false,
                         message: 'Product successfully updated',
                         data: product
@@ -215,7 +215,7 @@ const update = async (req, res, next) => {
                 } catch (err) {
                     fs.unlinkSync(target_path);
                     if (err && err.name === "ValidationsError") {
-                        return res.status(400).json({
+                        return res.json({
                             error: true,
                             message: err.message,
                             fields: err.errors
@@ -226,7 +226,7 @@ const update = async (req, res, next) => {
             })
         } else { 
             let product = await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true })
-            return res.status(200).json({
+            return res.json({
                 error: false,
                 message: 'Product successfully updated',
                 data: product
@@ -235,7 +235,7 @@ const update = async (req, res, next) => {
 
     } catch (err) {
         if (err && err.name === "ValidationError") {
-            return res.status(400).json({
+            return res.json({
                 error: true,
                 message: err.message,
                 fields: err.errors
@@ -254,7 +254,7 @@ const remove = async (req, res, next) => {
             fs.unlinkSync(oldImage);
         }
 
-        res.status(200).json({
+        res.json({
             error: false,
             message: 'Product successfully deleted',
             data: product
