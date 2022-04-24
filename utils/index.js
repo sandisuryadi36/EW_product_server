@@ -9,7 +9,7 @@ function getToken(req) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
         return req.headers.authorization.split(' ')[1];
     }
-    return null;
+    return req.cookies.token;
 }
 
 function decodeToken() {
@@ -21,14 +21,14 @@ function decodeToken() {
             req.user = jwt.verify(token, config.secretKey);
             let user = await User.findOne({ token: { $in: [token] } });
             if (!user) {
-                return res.status(401).json({
+                return res.json({
                     error: true,
                     message: 'Token is invalid'
                 });
             }
         } catch (err) { 
             if (err && err.name === 'JsonWebTokenError') {
-                return res.status(401).json({
+                return res.json({
                     error: true,
                     message: err.message
                 });

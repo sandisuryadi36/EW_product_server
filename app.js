@@ -21,7 +21,10 @@ const invoiceRoute = require('./app/invoice/routes');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(cors())
+app.use(cors({
+  origin: true,
+  credentials: true
+}))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
