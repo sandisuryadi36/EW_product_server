@@ -128,7 +128,7 @@ const create = async (req, res, next) => {
                             fields: err.errors
                         })
                     }
-                    next(error);
+                    next(err);
                 }
             })
 

@@ -89,14 +89,14 @@ const logout = async (req, res, next) => {
 
 const me = (req, res, next) => { 
     if (!req.user) {
-        res.json({
+        return res.json({
             error: true,
             login: false,
             message: 'User is not logged in or token is invalid'
         })
     }
 
-    res.json({
+    return res.json({
         error: false,
         login: true,
         user: req.user
