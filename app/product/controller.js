@@ -111,11 +111,12 @@ const create = async (req, res, next) => {
                         }
                     })
                     fs.unlinkSync(tmp_path);
-                    await product.save();
+                    let resProduct = await product.save()
+                    resProduct = await Product.findById(resProduct._id).populate('category').populate('tags')
                     return res.json({
                         error: false,
                         message: 'Product successfully created',
-                        data: product
+                        data: resProduct
                     })
                 } catch (err) {
                     fs.unlinkSync(target_path);
@@ -206,6 +207,7 @@ const update = async (req, res, next) => {
 
                     fs.unlinkSync(tmp_path);
                     product = await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true });
+                    product = await Product.findById(product._id).populate('category').populate('tags')
                     return res.json({
                         error: false,
                         message: 'Product successfully updated',
@@ -225,6 +227,7 @@ const update = async (req, res, next) => {
             })
         } else { 
             let product = await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true })
+            product = await Product.findById(product._id).populate('category').populate('tags')
             return res.json({
                 error: false,
                 message: 'Product successfully updated',
