@@ -37,7 +37,7 @@ const viewAll = async (req, res, next) => {
             }
         }
 
-        console.log(filter)
+        // console.log(filter)
 
         totaldata = await Product.countDocuments()
         let products = await Product.find(filter).skip((page - 1) * limit).limit(limit).populate('category').populate('tags')
@@ -58,7 +58,14 @@ const viewAll = async (req, res, next) => {
 // get one controller
 const viewOne = async (req, res, next) => {
     try {
-        Product.findById(req.params.id)
+        const product = await Product.findById(req.params.id).populate('category').populate('tags')
+        if (!product) { 
+            return res.json({
+                error: true,
+                message: 'Product not found',
+                data: null
+            })
+        }
         res.json({
             error: false,
             message: 'Product successfully found',
@@ -75,14 +82,14 @@ const create = async (req, res, next) => {
         const payload = req.body;
         const image = req.file;
 
-        if (payload.category) {
-            let category = await Category.findOne({ name: { $regex: '.*' + payload.category + '.*', $options: 'i' } })
-            if (category) {
-                payload.category = category._id
-            } else { 
-                delete payload.category
-            }
-        }
+        // if (payload.category) {
+        //     let category = await Category.findOne({ name: { $regex: '.*' + payload.category + '.*', $options: 'i' } })
+        //     if (category) {
+        //         payload.category = category._id
+        //     } else { 
+        //         delete payload.category
+        //     }
+        // }
 
         if (payload.tags && payload.tags.length > 0) { 
             let tags = await Tag.find({ name: { $in: payload.tags } })
@@ -138,11 +145,12 @@ const create = async (req, res, next) => {
 
         } else {
             let product = new Product(payload);
-            await product.save();
+            let resProduct = await product.save()
+            resProduct = await Product.findById(resProduct._id).populate('category').populate('tags')
             return res.json({
                 error: false,
                 message: 'Product successfully created',
-                data : product
+                data : resProduct
             })
         }
     } catch (err) {
