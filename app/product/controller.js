@@ -163,15 +163,6 @@ const update = async (req, res, next) => {
         const image = req.file;
         const payload = req.body;
 
-        if (payload.category) {
-            let category = await Category.findOne({ name: { $regex: '.*' + payload.category + '.*', $options: 'i' } })
-            if (category) {
-                payload.category = category._id
-            } else {
-                delete payload.category
-            }
-        }
-
         if (payload.tags && payload.tags.length > 0) {
             let tags = await Tag.find({ name: { $in: payload.tags } })
             if (tags.length > 0) {
