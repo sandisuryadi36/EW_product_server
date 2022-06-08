@@ -68,7 +68,7 @@ const login = (req, res, next) => {
 
 const logout = async (req, res, next) => { 
     const token = getToken(req)
-    let user = await User.findOneAndUpdate({ token }, { $pull: { token } })
+    let user = await User.findOneAndUpdate({ token: { $in: [token] } } , { $pull: { token } })
     
     if (!token || !user) {
         return res.json({
