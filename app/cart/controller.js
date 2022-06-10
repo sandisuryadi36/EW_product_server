@@ -22,7 +22,7 @@ const update = async (req, res, next) => {
         payload.imageUrl = product.image.filePath
         payload.total = payload.quantity * payload.price
 
-        const cartIten = await CartItem.findOneAndUpdate(
+        const cartItem = await CartItem.findOneAndUpdate(
             { product: payload.product, user: user._id },
             payload,
             { new: true, upsert: true, runValidators: true }
@@ -30,7 +30,7 @@ const update = async (req, res, next) => {
         res.json({
             error: false,
             message: 'Cart item successfully updated',
-            data: cartIten
+            data: cartItem
         })
     } catch (err) { 
         if (err && err.name === "ValidationError") { 
@@ -46,8 +46,10 @@ const update = async (req, res, next) => {
 
 const viewByUser = async (req, res, next) => { 
     try {
-        const user = req.user
-        const cartItems = await CartItem.find({ user: user._id }).select('-user')
+        let filter = {}
+        filter.user = req.user._id
+        if (req.query.productID) filter.product = req.query.productID
+        const cartItems = await CartItem.find(filter).select('-user')
         res.json({
             error: false,
             message: 'Cart items successfully retrieved',
@@ -58,7 +60,20 @@ const viewByUser = async (req, res, next) => {
     }
 }
 
+const remove = async (req, res, next) => { 
+    try {
+        await CartItem.findOneAndDelete({ _id: req.params.id })
+        res.json({
+            error: false,
+            message: 'Cart item successfully deleted'
+        })
+    } catch (err) {
+        next(err);
+    }
+}
+
 module.exports = {
     update,
-    viewByUser
+    viewByUser,
+    remove
 }
