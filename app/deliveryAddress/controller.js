@@ -36,11 +36,11 @@ const update = async (req, res, next) => {
             message: 'Delivery address not found'
         })
 
-        await DeliveryAddress.findByIdAndUpdate(address._id, payload)
+        let updateAddress = await DeliveryAddress.findByIdAndUpdate(address._id, payload, { new: true })
         res.json({
             error: false,
             message: 'Delivery address successfully updated',
-            data: address
+            data: updateAddress
         })
 
     } catch (err) { 
