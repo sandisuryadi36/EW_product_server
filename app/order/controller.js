@@ -17,7 +17,7 @@ const create = async (req, res, next) => {
         let address = await DeliveryAddress.findOne({ _id: deliveryAddressID })
         let order = new Order({
             _id : Types.ObjectId(),
-            status: 'waiting_payment',
+            status: 'waiting payment',
             deliveryFee,
             deliveryAddress: {
                 provinsi: address.provinsi,
