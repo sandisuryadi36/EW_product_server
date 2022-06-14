@@ -10,5 +10,9 @@ module.exports = {
     dbPort: process.env.DB_PORT,
     dbUser: process.env.DB_USER,
     dbPass: process.env.DB_PASS,
-    dbName: process.env.DB_NAME
+    dbName: process.env.DB_NAME,
+    bucketName: process.env.BUCKET_NAME,
+    clientEmail: process.env.CLIENT_EMAIL,
+    privateKey: process.env.PRIVATE_KEY,
+    projectId: process.env.PROJECT_ID
 }

@@ -4,6 +4,21 @@ const config = require('../config');
 const Product = require('./model');
 const Category = require('../category/model');
 const Tag = require('../tag/model');
+const { initializeApp } = require("firebase/app");
+const { deleteObject, getStorage, ref, getDownloadURL } = require("firebase/storage");
+const { bucketName, clientEmail, privateKey, projectId } = require('../config');
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDPoGbYtvtXfgCAjWz3uKTtDXmUtzFXp0Q",
+    authDomain: "tech-shop-6a24f.firebaseapp.com",
+    storageBucket: bucketName,
+    messagingSenderId: "747838565547",
+    appId: "1:747838565547:web:c884047b8ea0dab595dbee",
+    projectId,
+};
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const storage = getStorage();
 
 // get all controller
 const viewAll = async (req, res, next) => {
@@ -92,49 +107,24 @@ const create = async (req, res, next) => {
         }
 
         if (image) {
-            let tmp_path = image.path;
-            let originalExt = image.originalname.split('.').pop();
-            let fileName = "image-" + image.filename + "." + originalExt;
-            let target_path = path.resolve(config.rootPath, `public/images/product/${fileName}`);
+            let originalExt = image.publicUrl.split('.').pop();
+            let fileName = image.filename + "." + originalExt;
 
-            const src = fs.createReadStream(tmp_path);
-            const dest = fs.createWriteStream(target_path);
-            src.pipe(dest);
-
-            src.on('end', async () => {
-                try {
-                    let product = new Product({
-                        ...payload,
-                        image: {
-                            fileName,
-                            filePath: `${req.protocol}://${req.headers.host}/public/images/product/${fileName}`
-                        }
-                    })
-                    fs.unlinkSync(tmp_path);
-                    let resProduct = await product.save()
-                    resProduct = await Product.findById(resProduct._id).populate('category').populate('tags')
-                    return res.json({
-                        error: false,
-                        message: 'Product successfully created',
-                        data: resProduct
-                    })
-                } catch (err) {
-                    fs.unlinkSync(target_path);
-                    if(err && err.name === "ValidationsError") {
-                        return res.json({
-                            error: true,
-                            message: err.message,
-                            fields: err.errors
-                        })
-                    }
-                    next(err);
+            let product = new Product({
+                ...payload,
+                image: {
+                    fileName,
+                    filePath: image.publicUrl
                 }
             })
-
-            src.on('error', async (err) => {
-                next(err);
-            });
-
+            
+            let resProduct = await product.save()
+            resProduct = await Product.findById(resProduct._id).populate('category').populate('tags')
+            return res.json({
+                error: false,
+                message: 'Product successfully created',
+                data: resProduct
+            })
         } else {
             let product = new Product(payload);
             let resProduct = await product.save()
@@ -173,48 +163,32 @@ const update = async (req, res, next) => {
         }
 
         if (image) {
-            let tmp_path = image.path;
-            let originalExt = image.originalname.split('.').pop();
-            let fileName = "image-" + image.filename + "." + originalExt;
-            let target_path = path.resolve(config.rootPath, `public/images/product/${fileName}`);
+            let fileName = image.path.split('/').pop();
 
-            const src = fs.createReadStream(tmp_path);
-            const dest = fs.createWriteStream(target_path);
-            src.pipe(dest);
+            payload.image = {
+                fileName,
+                filePath: image.publicUrl
+            }
 
-            src.on('end', async () => {
-                try {
-                    payload.image = {
-                        fileName,
-                        filePath: `${req.protocol}://${req.headers.host}/public/images/product/${fileName}`
-                    }
+            let product = await Product.findById(req.params.id);
 
-                    // dellete old image
-                    let product = await Product.findById(req.params.id);
-                    let oldImage = `${config.rootPath}/public/images/product/${product.image.fileName}`;
-                    if (fs.existsSync(oldImage)) { 
-                        fs.unlinkSync(oldImage);
-                    }
+            // delete old image
+            const oldImageRef = ref(storage, `images/${product.image.fileName}`);
+            // oldImageRef.storage.getDownloadURL().then(onResolve, onReject);
+            getDownloadURL(oldImageRef).then(onResolve, onReject);
+            function onResolve(url) { 
+                deleteObject(oldImageRef)
+            }
+            function onReject(error) { 
+                console.log(error)
+            }
 
-                    fs.unlinkSync(tmp_path);
-                    product = await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true });
-                    product = await Product.findById(product._id).populate('category').populate('tags')
-                    return res.json({
-                        error: false,
-                        message: 'Product successfully updated',
-                        data: product
-                    })
-                } catch (err) {
-                    fs.unlinkSync(target_path);
-                    if (err && err.name === "ValidationsError") {
-                        return res.json({
-                            error: true,
-                            message: err.message,
-                            fields: err.errors
-                        })
-                    }
-                    next(err);
-                }
+            product = await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true });
+            product = await Product.findById(product._id).populate('category').populate('tags')
+            return res.json({
+                error: false,
+                message: 'Product successfully updated',
+                data: product
             })
         } else { 
             let product = await Product.findOneAndUpdate({ _id: req.params.id }, { $set: payload }, { new: true, runValidators: true })
