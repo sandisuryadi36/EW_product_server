@@ -4,6 +4,7 @@ const passport = require('passport')
 const jwt = require('jsonwebtoken')
 const config = require('../config')
 const { getToken } = require('../../utils')
+const { host } = require('../config');
 
 const register = async (req, res, next) => { 
     try {
@@ -51,6 +52,9 @@ const login = (req, res, next) => {
         const token = jwt.sign( user , config.secretKey)
         await User.findByIdAndUpdate(user._id, { $push: { token } })
         res.cookie('token', token, {
+            sameSite: "none",
+            secure: true,
+            domain: host,
             httpOnly: true,
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
         })
