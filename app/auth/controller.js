@@ -52,7 +52,7 @@ const login = (req, res, next) => {
         const token = jwt.sign( user , config.secretKey)
         await User.findByIdAndUpdate(user._id, { $push: { token } })
         res.cookie('token', token, {
-            sameSite: "strict",
+            sameSite: "lax",
             secure: true,
             domain: host,
             httpOnly: true,
