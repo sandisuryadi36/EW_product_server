@@ -57,6 +57,7 @@ const login = (req, res, next) => {
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
         })
         res.set('Access-Control-Allow-Origin', 'http://localhost:3000')
+        res.set('Access-Control-Allow-Credentials', true)
         res.json({
             error: false,
             message: 'Login successfully',

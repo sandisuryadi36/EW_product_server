@@ -27,7 +27,6 @@ app.use(cors({
   ],
   credentials: true,
 }))
-app.set('access-control-allow-origin', 'http://localhost:3000');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
