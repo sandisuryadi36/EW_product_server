@@ -9,8 +9,12 @@ function getToken(req) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
         return req.headers.authorization.split(' ')[1];
     }
-    console.log(req);
-    return req.cookies.token;
+    console.log(req.headers.getCookies());
+    if (process.env.NODE_ENV === 'production') { 
+        return req.headers.getCookies().token;
+    } else  { 
+        return req.cookies.token;
+    }
 }
 
 function decodeToken() {
