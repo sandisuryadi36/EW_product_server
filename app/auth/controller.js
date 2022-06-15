@@ -50,14 +50,14 @@ const login = (req, res, next) => {
         })
         const token = jwt.sign( user , config.secretKey)
         await User.findByIdAndUpdate(user._id, { $push: { token } })
+        res.set('Access-Control-Allow-Origin', 'http://localhost:3000')
+        res.set('Access-Control-Allow-Credentials', true)
         res.cookie('token', token, {
             sameSite: "none",
             secure: true,
             httpOnly: true,
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
         })
-        res.set('Access-Control-Allow-Origin', 'http://localhost:3000')
-        res.set('Access-Control-Allow-Credentials', true)
         res.json({
             error: false,
             message: 'Login successfully',
