@@ -9,9 +9,9 @@ function getToken(req) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
         return req.headers.authorization.split(' ')[1];
     }
-    console.log(req.headers.getCookies());
+    console.log(req.headers.getC('cookies'));
     if (process.env.NODE_ENV === 'production') { 
-        return req.headers.getCookies().token;
+        return req.headers.getC('cookies').token;
     } else  { 
         return req.cookies.token;
     }
