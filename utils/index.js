@@ -10,8 +10,8 @@ function getToken(req) {
         return req.headers.authorization.split(' ')[1];
     }
     if (process.env.NODE_ENV === 'production') { 
-        console.log(req.headers.get('cookies'))
-        return req.headers.get('cookies').token;
+        console.log(req.headers)
+        // return req.headers.get('cookies').token;
     } else  { 
         return req.cookies.token;
     }
