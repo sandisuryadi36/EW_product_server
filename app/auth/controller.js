@@ -50,12 +50,6 @@ const login = (req, res, next) => {
         })
         const token = jwt.sign( user , config.secretKey)
         await User.findByIdAndUpdate(user._id, { $push: { token } })
-        // res.cookie('token', token, {
-        //     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-        //     secure: process.env.NODE_ENV === 'production',
-        //     httpOnly: true,
-        //     expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
-        // })
         res.json({
             error: false,
             message: 'Login successfully',
@@ -79,9 +73,6 @@ const logout = async (req, res, next) => {
         })
     }
 
-    // res.cookie('token', '', {
-    //     expires: new Date(Date.now() - 1000)
-    // })
     return res.json({
         error: false,
         login: false,
