@@ -54,7 +54,7 @@ const login = (req, res, next) => {
         res.cookie('token', token, {
             sameSite: "lax",
             secure: true,
-            domain: host,
+            domain: "https://ts-product-api.herokuapp.com",
             httpOnly: true,
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
         })
