@@ -55,7 +55,7 @@ const login = (req, res, next) => {
         res.cookie('token', token, {
             sameSite: "none",
             secure: true,
-            httpOnly: true,
+            // httpOnly: true,
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
         })
         res.json({
