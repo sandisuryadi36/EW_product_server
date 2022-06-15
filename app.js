@@ -24,6 +24,7 @@ app.set('view engine', 'pug');
 app.use(cors({
   origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  preflightContinue: true,
   credentials: true,
 }))
 app.use(logger('dev'));
