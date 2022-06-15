@@ -53,9 +53,7 @@ const login = (req, res, next) => {
         res.set('Access-Control-Allow-Origin', 'http://localhost:3000')
         res.set('Access-Control-Allow-Credentials', true)
         res.cookie('token', token, {
-            sameSite: "none",
-            secure: true,
-            // httpOnly: true,
+            httpOnly: true,
             expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
         })
         res.json({
