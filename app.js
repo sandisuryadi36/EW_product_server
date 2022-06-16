@@ -15,6 +15,7 @@ const deliveryAddressRoute = require('./app/deliveryAddress/routes');
 const cartRoute = require('./app/cart/routes');
 const orderRoute = require('./app/order/routes');
 const invoiceRoute = require('./app/invoice/routes');
+const cookieParser = require('cookie-parser');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,6 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '/public')));
 app.use('/public', express.static(path.join(__dirname, '/public')));
+app.use(cookieParser());
 app.use(decodeToken());
 
 app.use('/auth', authRoute);
