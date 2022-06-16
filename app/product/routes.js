@@ -10,7 +10,11 @@ const productController = require('./controller');
 const multer = Multer({
     storage: FirebaseStorage({
         bucketName,
-        credentials: { clientEmail, privateKey: privateKey.replace(/\\n/g, '\n'), projectId },
+        credentials: {
+            clientEmail,
+            privateKey: process.env.NODE_ENV === 'production' ? privateKey.replace(/\\n/g, '\n') : privateKey,
+            projectId
+        },
         directoryPath: "images",
         unique: true,
         public: true

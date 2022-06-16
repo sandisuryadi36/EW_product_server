@@ -1,13 +1,12 @@
 const CartItem = require('./itemModel')
 const Product = require('../product/model')
-const { response } = require('../../app')
 
 const update = async (req, res, next) => { 
     try {
         const payload = req.body
         const user = req.user
         const product = await Product.findById(payload.product)
-        if (!product) return response.json({
+        if (!product) return res.json({
             error: true,
             message: 'Product not found'
         })
