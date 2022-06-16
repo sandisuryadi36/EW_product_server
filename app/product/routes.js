@@ -20,7 +20,7 @@ const multer = Multer({
         public: true
     })
 })
-console.log(privateKey).replace(/\\n/g, '\n')
+console.log((privateKey).replace(/\\n/g, '\n'))
 
 router.get('/product', productController.viewAll);
 router.get('/product/:id', productController.viewOne);
