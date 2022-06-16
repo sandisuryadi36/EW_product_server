@@ -6,11 +6,12 @@ const { Ability, AbilityBuilder } = require('@casl/ability')
 
 // jwt
 function getToken(req) {
-    // if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-    //     return req.headers.authorization.split(' ')[1];
-    // }
-    console.log(req.cookies)
-    return req.signedCookies.token;
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        if (req.headers.authorization.split(' ')[1] === "null") {
+            return null;
+        }
+        return req.headers.authorization.split(' ')[1];
+    }
 }
 
 function decodeToken() {
@@ -19,7 +20,13 @@ function decodeToken() {
             const token = getToken(req);
             if (!token) return next();
 
-            req.user = jwt.verify(token, config.secretKey);
+            req.user = jwt.verify(token, config.secretKey, (err, decoded) => { 
+                if (err) return res.json({
+                    message: err.message,
+                    name: err.name,
+                })
+                return decoded;
+            });
             let user = await User.findOne({ token: { $in: [token] } });
             if (!user) {
                 return res.json({

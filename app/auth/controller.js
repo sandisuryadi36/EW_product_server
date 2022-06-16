@@ -48,7 +48,13 @@ const login = (req, res, next) => {
             error: true,
             message: "Email or Password is incorrect"
         })
-        const token = jwt.sign( user , config.secretKey)
+        const token = jwt.sign(
+            user,
+            config.secretKey,
+            {
+                expiresIn: '24h'
+            }
+        )
         await User.findByIdAndUpdate(user._id, { $push: { token } })
         res.json({
             error: false,
