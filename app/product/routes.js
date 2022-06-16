@@ -12,7 +12,7 @@ const multer = Multer({
         bucketName,
         credentials: {
             clientEmail,
-            privateKey: process.env.NODE_ENV === 'production' ? (privateKey.replace(/\\n/g, '\n')) : privateKey,
+            privateKey: privateKey,
             projectId
         },
         directoryPath: "images",
