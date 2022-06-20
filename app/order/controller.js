@@ -19,6 +19,7 @@ const create = async (req, res, next) => {
             _id : Types.ObjectId(),
             status: 'waiting payment',
             deliveryFee,
+            orderImageUrl: items[0].product.image.filePath,
             deliveryAddress: address.addressString,
             user: req.user._id
         })

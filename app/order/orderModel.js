@@ -28,6 +28,9 @@ const orderSchema = new mongoose.Schema({
     }],
     order_number: {
         type: Number
+    },
+    orderImageUrl: {
+        type: String
     }
 
 }, { timestamps: true })
