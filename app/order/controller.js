@@ -30,7 +30,8 @@ const create = async (req, res, next) => {
             quantity: parseInt(item.quantity),
             total: parseInt(item.total),
             order: order._id,
-            product: item.product._id
+            product: item.product._id,
+            imageUrl: item.product.image.filePath
         })))
         orderItems.forEach(item => order.orderItems.push(item))
         await order.save()

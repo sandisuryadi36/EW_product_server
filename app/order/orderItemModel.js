@@ -18,6 +18,10 @@ const orderItemSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    imageUrl: {
+        type: String,
+        required: true
+    },
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
