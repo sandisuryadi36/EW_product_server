@@ -14,16 +14,13 @@ const invoiceSchema = new mongoose.Schema({
         required: true
     },
     deliveryAddress: {
-        provinsi: { type: String, required: [true, 'Provinsi is required'] },
-        kota: { type: String, required: [true, 'Kota is required'] },
-        kecamatan: { type: String, required: [true, 'Kecamatan is required'] },
-        kelurahan: { type: String, required: [true, 'Kelurahan is required'] },
-        detail: { type: String, required: [true, 'Detail is required'] },
+        type: String,
+        required: true
     },
     paymentStatus: {
         type: String,
-        enum: ['waiting_payment', 'paid'],
-        default: 'waiting_payment'
+        enum: ['waiting payment', 'paid'],
+        default: 'waiting payment'
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
