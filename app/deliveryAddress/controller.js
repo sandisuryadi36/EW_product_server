@@ -5,6 +5,9 @@ const create = async (req, res, next) => {
         let payload = req.body
         let user = req.user
 
+        let adressString = [payload.detail, payload.kelurahan, payload.kecamatan, payload.kota, payload.provinsi].join(', ')
+        payload.addressString = adressString + ". " + payload.kodePos
+
         let address = new DeliveryAddress({ ...payload, user: user._id })
         await address.save()
         res.json({

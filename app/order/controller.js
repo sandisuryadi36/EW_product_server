@@ -19,13 +19,7 @@ const create = async (req, res, next) => {
             _id : Types.ObjectId(),
             status: 'waiting payment',
             deliveryFee,
-            deliveryAddress: {
-                provinsi: address.provinsi,
-                kota: address.kota,
-                kecamatan: address.kecamatan,
-                kelurahan: address.kelurahan,
-                detail: address.detail
-            },
+            deliveryAddress: address.addressString,
             user: req.user._id
         })
         let orderItems = await OrderItem.insertMany(items.map(item => ({ 
@@ -91,6 +85,36 @@ const viewByUser = async (req, res, next) => {
     }
 }
 
+const viewById = async (req, res, next) => { 
+    try {
+        let order = await Order.findOne({ _id: req.params.id })
+            .populate('orderItems')
+            .populate('deliveryAddress')
+            .populate('user')
+            .select('-user')
+        if (!order) return res.json({
+            error: true,
+            message: 'Order not found'
+        })
+
+        return res.json({
+            error: false,
+            message: 'Order successfully retrieved',
+            data: order
+        })
+
+    } catch (err) { 
+        if (err && err.name === "ValidationError") { 
+            return res.json({
+                error: true,
+                message: err.message,
+                fields: err.errors
+            })
+        }
+        next(err);
+    }
+}
+
 const viewAll = async (req, res, next) => { 
     try {
         let { page = 1 , limit = 10 } = req.query
@@ -127,5 +151,6 @@ const viewAll = async (req, res, next) => {
 module.exports = {
     create,
     viewByUser,
-    viewAll
+    viewAll,
+    viewById
 }

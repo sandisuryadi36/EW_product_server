@@ -10,6 +10,10 @@ router.get('/order',
     policeCheck('read', 'Order'),
     orderController.viewByUser
 )
+router.get('/order/:id',
+    policeCheck('read', 'Order'),
+    orderController.viewById
+)
 router.get('/order-all',
     policeCheck('view', 'Order'),
     orderController.viewAll

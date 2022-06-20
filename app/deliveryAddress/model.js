@@ -32,6 +32,14 @@ const deliveryaddressSchema = new mongoose.Schema({
         required: [true, 'Detail is required'],
         maxlength: [1000, 'Detail must be at most 1000 characters long']
     },
+    kodePos: {
+        type: String,
+        required: [true, 'Postal code is required'],
+        maxlength: [10, 'Postal code must be at most 10 characters long']
+    },
+    addressString: {
+        type: String
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
