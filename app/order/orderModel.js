@@ -5,8 +5,8 @@ const Invoice = require('../invoice/model')
 const orderSchema = new mongoose.Schema({
     status: {
         type: String,
-        enum: ['waiting_payment', 'processing', 'in_delivery', 'delivered', 'cancelled'],
-        default: 'waiting_payment'
+        enum: ['waiting payment', 'processing', 'in delivery', 'delivered', 'cancelled'],
+        default: 'waiting payment'
     },
     deliveryFee: {
         type: Number,
