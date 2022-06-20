@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema({
     order_number: {
         type: Number
     },
-    orderImageUrl: {
+    thumbnail: {
         type: String
     }
 
