@@ -9,6 +9,12 @@ const userSchema = new mongoose.Schema({
         maxlength: [50, 'Name must be at most 50 characters long'],
         required: [true, 'Name is required']
     },
+    userName: {
+        type: String,
+        minlength: [3, 'Username must be at least 3 characters long'],
+        maxlength: [16, 'Username must be at most 16 characters long'],
+        required: [true, 'Username is required']
+    },
     email: {
         type: String,
         maxlength: [255, 'Email must be at most 255 characters long'],
@@ -40,6 +46,19 @@ userSchema.path('email').validate((value) => {
 userSchema.path('email').validate(async function(value) { 
     try {
         const user = await this.model('User').findOne({ email: value })
+        if (user) {
+            return false
+        }
+        return true
+    } catch (error) { 
+        return false
+    }
+}, attr => `${attr.value} is already in use`)
+
+// validate if userName exists
+userSchema.path('userName').validate(async function(value) { 
+    try {
+        const user = await this.model('User').findOne({ userName: value })
         if (user) {
             return false
         }
