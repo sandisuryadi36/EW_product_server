@@ -150,9 +150,38 @@ const viewAll = async (req, res, next) => {
     }
 }
 
+const update = async (req, res, next) => { 
+    try {
+        let order = await Order.findOne({ _id: req.params.id })
+        if (!order) return res.json({
+            error: true,
+            message: 'Order not found'
+        })
+        let { status } = req.body
+        order.status = status
+        await order.save()
+        return res.json({
+            error: false,
+            message: 'Order successfully updated',
+            data: order
+        })
+
+    } catch (err) { 
+        if (err && err.name === "ValidationError") { 
+            return res.json({
+                error: true,
+                message: err.message,
+                fields: err.errors
+            })
+        }
+        next(err);
+    }
+}
+
 module.exports = {
     create,
     viewByUser,
     viewAll,
-    viewById
+    viewById,
+    update
 }

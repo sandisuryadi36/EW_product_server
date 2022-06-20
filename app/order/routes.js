@@ -18,5 +18,9 @@ router.get('/order-all',
     policeCheck('view', 'Order'),
     orderController.viewAll
 )
+router.put('/order/:id',
+    policeCheck('update', 'Order'),
+    orderController.update
+)
 
 module.exports = router;
