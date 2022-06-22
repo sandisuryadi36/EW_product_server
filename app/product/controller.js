@@ -23,9 +23,14 @@ const storage = getStorage();
 // get all controller
 const viewAll = async (req, res, next) => {
     try {
-        let { search = '', limit = 10, page = 1, category = '', tags = [] } = req.query;
+        let { search = '', limit = 10, page = 1, category = '', tags = "" } = req.query;
         if (limit <= 0) { limit = 10 }
         if (page <= 0) { page = 1 }
+        if (tags !== "") {
+            if (tags.indexOf(",") !== -1) {
+                tags = tags.split(",")
+            } else tags = [tags]
+        } else tags = []
         let totaldata = 0
 
         let filter = {}
