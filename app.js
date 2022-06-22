@@ -27,7 +27,7 @@ app.use(cors({
     "https://techshop-web.herokuapp.com/"
   ],
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With', 'Access-Control-Allow-Headers', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }))
 app.use(logger('dev'));
