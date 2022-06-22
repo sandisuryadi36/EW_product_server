@@ -23,7 +23,8 @@ app.set('view engine', 'pug');
 
 app.use(cors({
   origin: [
-    'http://localhost:3000'
+    'http://localhost:3000',
+    "https://techshop-web.herokuapp.com/"
   ],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials'],
