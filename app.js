@@ -21,15 +21,7 @@ const cookieParser = require('cookie-parser');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    "https://techshop-web.herokuapp.com/"
-  ],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With', 'Access-Control-Allow-Headers', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-}))
+app.use(cors())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
