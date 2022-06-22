@@ -51,7 +51,7 @@ const viewAll = async (req, res, next) => {
         if (tags.length > 0) { 
             tagsQuery = await Tag.find({ name: { $in: tags } })
             if (tagsQuery.length > 0) {
-                filter.tags = { $in: tagsQuery.map(tag => tag._id) }
+                filter.tags = { $all: tagsQuery }
             } else {
                 filter.tags = null
             }
