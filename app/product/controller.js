@@ -113,8 +113,7 @@ const create = async (req, res, next) => {
         }
 
         if (image) {
-            let originalExt = image.publicUrl.split('.').pop();
-            let fileName = image.filename + "." + originalExt;
+            let fileName = image.path.split('/').pop();
 
             let product = new Product({
                 ...payload,
@@ -180,7 +179,6 @@ const update = async (req, res, next) => {
 
             // delete old image
             const oldImageRef = ref(storage, `images/${product.image.fileName}`);
-            // oldImageRef.storage.getDownloadURL().then(onResolve, onReject);
             getDownloadURL(oldImageRef).then(onResolve, onReject);
             function onResolve(url) { 
                 deleteObject(oldImageRef)
@@ -222,9 +220,15 @@ const update = async (req, res, next) => {
 const remove = async (req, res, next) => {
     try {
         let product = await Product.findByIdAndDelete(req.params.id)
-        let oldImage = `${config.rootPath}/public/images/product/${product.image.fileName}`;
-        if (fs.existsSync(oldImage)) {
-            fs.unlinkSync(oldImage);
+
+        // delete old image
+        const oldImageRef = ref(storage, `images/${product.image.fileName}`);
+        getDownloadURL(oldImageRef).then(onResolve, onReject);
+        function onResolve(url) {
+            deleteObject(oldImageRef)
+        }
+        function onReject(error) {
+            console.log(error)
         }
 
         res.json({
