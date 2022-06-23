@@ -36,7 +36,8 @@ const viewAll = async (req, res, next) => {
         let filter = {}
 
         if (search.length > 0) { 
-            filter.name = { $regex: '.*' + search + '.*', $options: 'i' }
+            let searchRegex = new RegExp('.*' + search + '.*', 'i')
+            filter = { $or: [{ name: searchRegex }, {description: searchRegex}]}
         }
 
         if (category.length > 0) { 
