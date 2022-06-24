@@ -15,6 +15,7 @@ const deliveryAddressRoute = require('./app/deliveryAddress/routes');
 const cartRoute = require('./app/cart/routes');
 const orderRoute = require('./app/order/routes');
 const invoiceRoute = require('./app/invoice/routes');
+const userRoute = require('./app/user/routes');
 const cookieParser = require('cookie-parser');
 
 // view engine setup
@@ -41,6 +42,7 @@ app.use('/api/v1', deliveryAddressRoute);
 app.use('/api/v1', cartRoute);
 app.use('/api/v1', orderRoute);
 app.use('/api/v1', invoiceRoute);
+app.use('/api/v1', userRoute)
 
 app.use('/', function (req, res) {
   res.render('index', { title: 'Product API Service' });

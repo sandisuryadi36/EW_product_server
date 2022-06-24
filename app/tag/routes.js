@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const tagController = require('./constroller');
+const tagController = require('./controller');
 const { policeCheck } = require('../../utils');
 
 router.get('/tag', tagController.viewAll);
