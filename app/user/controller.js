@@ -4,7 +4,7 @@ const update = async (req, res, next) => {
     try {
         const id = req.user._id
         const payload = req.body
-        const user = await User.findByIdAndUpdate(id, payload, { new: true })
+        const user = await User.findOneAndUpdate({_id: id}, payload, { new: true })
         res.json({
             error: false,
             message: "Profile successfully updated",

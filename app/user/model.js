@@ -79,6 +79,17 @@ userSchema.pre('save', async function (next) {
         next(error)
     }
 })
+// hash password before updating
+userSchema.pre('findOneAndUpdate', async function (next) { 
+    try {
+        if (this.getUpdate().password) {
+            this.getUpdate().password = await bcrypt.hash(this.getUpdate().password, 10)
+        }
+        next()
+    } catch (error) { 
+        next(error)
+    }
+})
 
 // auto increment customer id
 userSchema.plugin(AutoIncrement, { inc_field: 'customer_id' })
