@@ -2,7 +2,7 @@ const Tag = require('./model')
 
 const create = async (req, res, next) => { 
     try {
-        const tag = await Tag.create(req.body, { new: true, runValidators: true })
+        const tag = await Tag.create(req.body)
         res.json({
             error: false,
             message: 'Tag successfully created',
