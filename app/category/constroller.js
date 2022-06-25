@@ -2,7 +2,7 @@ const Category = require('./model')
 
 const create = async (req, res, next) => { 
     try {
-        const category = await Category.create(req.body)
+        const category = await Category.create(req.body, { new: true, runValidators: true })
         res.json({
             error: false,
             message: 'Category successfully created',
