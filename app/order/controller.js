@@ -152,14 +152,12 @@ const viewAll = async (req, res, next) => {
 
 const update = async (req, res, next) => { 
     try {
-        let order = await Order.findOne({ _id: req.params.id })
+        let { status } = req.body
+        let order = await Order.findOneAndUpdate({ _id: req.params.id }, { status }, { new: true })
         if (!order) return res.json({
             error: true,
             message: 'Order not found'
         })
-        let { status } = req.body
-        order.status = status
-        await order.save()
         return res.json({
             error: false,
             message: 'Order successfully updated',

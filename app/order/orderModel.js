@@ -5,7 +5,7 @@ const Invoice = require('../invoice/model')
 const orderSchema = new mongoose.Schema({
     status: {
         type: String,
-        enum: ['waiting payment', 'processing', 'in delivery', 'delivered', 'cancelled'],
+        enum: ['waiting payment', 'paid', 'processing', 'in delivery', 'delivered', 'cancelled'],
         default: 'waiting payment'
     },
     deliveryFee: {
@@ -50,6 +50,16 @@ orderSchema.post('save', async function () {
         deliveryAddress: this.deliveryAddress
     })
     await invoice.save()
+})
+
+// update invoice after paid
+orderSchema.post('findOneAndUpdate', async function (doc, next) {
+    if (doc.status === 'paid') {
+        let invoice = await Invoice.findOne({ order: doc._id })
+        invoice.paymentStatus = 'paid'
+        await invoice.save()
+    }
+    next()
 })
 
 module.exports = mongoose.model('Order', orderSchema)
