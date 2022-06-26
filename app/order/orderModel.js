@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const AutoIncrement = require('mongoose-sequence')(mongoose)
 const Invoice = require('../invoice/model')
 const Product = require('../product/model')
+const OrderItem = require('./orderItemModel')
 
 const orderSchema = new mongoose.Schema({
     status: {
@@ -59,7 +60,8 @@ orderSchema.post('findOneAndUpdate', async function (doc, next) {
         let invoice = await Invoice.findOne({ order: doc._id })
         invoice.paymentStatus = 'paid'
         await invoice.save()
-        doc.orderItems.forEach(async (item) => {
+        doc.orderItems.forEach(async (itemId) => {
+            let item = await OrderItem.findById(itemId)
             let product = await Product.findById(item.product)
             product.stock -= item.quantity
             await product.save()
