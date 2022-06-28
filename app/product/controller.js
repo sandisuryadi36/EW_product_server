@@ -24,6 +24,7 @@ const storage = getStorage();
 const viewAll = async (req, res, next) => {
     try {
         let { search = '', limit = 10, page = 1, category = '', tags = "" } = req.query;
+        let user = req.user
         if (limit <= 0) { limit = 10 }
         if (page <= 0) { page = 1 }
         if (tags !== "") {
@@ -56,6 +57,11 @@ const viewAll = async (req, res, next) => {
             } else {
                 filter.tags = null
             }
+        }
+
+        if (!user || (user && user.role !== 'admin')) {
+            filter.status = true
+            filter.stock = { $gt: 0 }
         }
 
         // console.log(filter)

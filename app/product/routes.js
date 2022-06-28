@@ -21,8 +21,14 @@ const multer = Multer({
     })
 })
 
-router.get('/product', productController.viewAll);
-router.get('/product/:id', productController.viewOne);
+router.get('/product',
+    policeCheck('read', 'Product'),
+    productController.viewAll    
+);
+router.get('/product/:id',
+    policeCheck('read', 'Product'),
+    productController.viewOne
+);
 router.post('/product',
     multer.single("image"),
     policeCheck('create', 'Product'),
