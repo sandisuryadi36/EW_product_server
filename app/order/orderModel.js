@@ -7,7 +7,7 @@ const OrderItem = require('./orderItemModel')
 const orderSchema = new mongoose.Schema({
     status: {
         type: String,
-        enum: ['waiting payment', 'paid', 'processing', 'in delivery', 'delivered', 'cancelled'],
+        enum: ['waiting payment', 'paid', 'processing', 'in delivery', 'delivered', 'cancelled', 'rejected'],
         default: 'waiting payment'
     },
     deliveryFee: {

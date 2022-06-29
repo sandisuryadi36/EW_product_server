@@ -123,7 +123,7 @@ const viewAll = async (req, res, next) => {
         let orders = await Order.find({})
             .skip((page - 1) * limit)
             .limit(limit)
-            .populate('orderItems.product')
+            .populate('orderItems')
             .populate('deliveryAddress')
             .populate('user')
             .sort({ createdAt: -1 })
