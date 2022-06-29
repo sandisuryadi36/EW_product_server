@@ -19,6 +19,7 @@ const create = async (req, res, next) => {
             _id : Types.ObjectId(),
             status: 'waiting payment',
             deliveryFee,
+            total: items.reduce((acc, item) => acc + item.total, 0) + deliveryFee,
             thumbnail: items[0].product.image.filePath,
             deliveryAddress: address.addressString,
             user: req.user._id

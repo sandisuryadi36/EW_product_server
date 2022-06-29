@@ -33,6 +33,10 @@ const orderSchema = new mongoose.Schema({
     },
     thumbnail: {
         type: String
+    },
+    total: {
+        type: Number,
+        default: 0
     }
 
 }, { timestamps: true })
